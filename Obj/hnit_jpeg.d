@@ -44,3 +44,4 @@
 ..\obj\hnit_jpeg.o: ..\Driver\LCD\hnit_lcd.h
 ..\obj\hnit_jpeg.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdlib.h
 ..\obj\hnit_jpeg.o: ..\Driver\KEY\hnit_key.h
+..\obj\hnit_jpeg.o: ..\Driver\LED\hnit_led.h

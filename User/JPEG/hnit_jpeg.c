@@ -14,8 +14,7 @@
 #include "stm32_usart.h"
 #include "hnit_lcd.h"
 #include "hnit_key.h"
-
-#define M_PI  3.1415926f
+#include "hnit_led.h"
 
 uint32_t size = 0;
 uint16_t encode[76800] __attribute__((at(0X68000000)));
@@ -24,50 +23,6 @@ uint16_t image[76800] __attribute__((at(0X68000000+sizeof(encode))));;
 float i_yuv_y[64] = {0};
 uint32_t i_size = 0;
 
-void rgb_to_yuv(uint16_t rgb[3840], uint16_t yuv[3840])
-{
-    uint16_t i, temp;
-    float red, green, blue;
-    
-    for(i = 0; i < 3840; i++)
-    {
-        red = (float)((rgb[i]&0xF800)>>8);   
-        green = (float)((rgb[i]&0x07E0)>>3);
-        blue = (float)((rgb[i]&0x001F)<<3);
-                         
-        temp = (uint16_t)(0.299f*red + 0.587f*green + 0.114f*blue); 
-        temp >>= 3;
-        yuv[i] = (temp<<11 | temp<<6 | temp);
-    }
-}
-
-//图像格式转换 仅取亮度
-void rgb565_to_yuv(uint16_t rgb[64], float y[64])
-{
-    uint16_t i;
-    float red, green, blue;
-    
-    for(i = 0; i < 64; i++)  
-    {
-        red = (float)((rgb[i]&0xF800)>>8);   
-        green = (float)((rgb[i]&0x07E0)>>3);
-        blue = (float)((rgb[i]&0x001F)<<3);
-                         
-        y[i] = 0.299f*red + 0.587f*green + 0.114f*blue -128;        
-    }
-}
-
-//由亮度生成灰度图
-void yuv_to_rgb565(float y[64], uint16_t rgb[64])
-{
-    uint16_t i, temp;
-    for(i = 0; i < 64; i++)
-    {        
-        temp = (uint16_t)(y[i] + 128);
-        temp >>= 3;
-        rgb[i] = (temp<<11 | temp<<6 | temp);
-    }
-}
 
 //浮点数组显示
 void printf_array_f(float n[], uint16_t x, uint16_t y)
@@ -134,75 +89,234 @@ void printf_array_b(uint16_t n[], uint16_t x)
     }
 }
 
-static float alpha(int n)
+void rgb_to_yuv(uint16_t rgb[3840], uint16_t yuv[3840])
 {
-    if (n == 0) 
-        return 1.0f / (float)sqrt(8);
-    else        
-        return 1.0f / 2.0f;
-}
-
-                           
-//离散余弦变换
-void jpeg_dct2(float data[64])
-{
-    int u, v;
-    int x, y, i;
-    float buf[64];
-    float temp;
-
-    for(u = 0; u < 8; u++)
+    uint16_t i, temp;
+    float red, green, blue;
+    
+    for(i = 0; i < 3840; i++)
     {
-        for(v = 0; v < 8; v++)
-        {
-            temp = 0;
-            for(x = 0; x < 8; x++)
-            {
-                for(y=0; y < 8; y++)
-                {
-                    temp += data[y*8+x]
-                          * (float)cos((2.0f * x + 1.0f) / 16.0f * u * M_PI)
-                          * (float)cos((2.0f * y + 1.0f) / 16.0f * v * M_PI);
-                }
-            }
-            buf[v*8+u] = alpha(u) * alpha(v) * temp;
-        }
-    }
-
-    for(i = 0; i < 64; i++)
-    {
-        data[i] = buf[i];
+        red = (float)((rgb[i]&0xF800)>>8);   
+        green = (float)((rgb[i]&0x07E0)>>3);
+        blue = (float)((rgb[i]&0x001F)<<3);
+                         
+        temp = (uint16_t)(0.299f*red + 0.587f*green + 0.114f*blue); 
+        temp >>= 3;
+        yuv[i] = (temp<<11 | temp<<6 | temp);
     }
 }
 
-//离散余弦逆变换
-void jpeg_inv_dct2(float data[64])
+//图像格式转换 仅取亮度
+void rgb565_to_yuv(uint16_t rgb[64], float y[64])
 {
-    int u, v;
-    int x, y, i;
-    float buf[64];
-    float temp;
-
-    for (x = 0; x < 8; x++)
+    uint16_t i;
+    float red, green, blue;
+    
+    for(i = 0; i < 64; i++)  
     {
-        for (y = 0; y < 8; y++)
-        {
-            temp = 0;
-            for (u = 0; u < 8; u++)
-            {
-                for (v = 0; v < 8; v++)
-                {
-                    temp += alpha(u) * alpha(v) * data[v*8+u]
-                          * (float)cos((2.0f * x + 1.0f) / 16.0f * u * M_PI)
-                          * (float)cos((2.0f * y + 1.0f) / 16.0f * v * M_PI);                
-                }
-            }
-            buf[y*8+x] = temp;
-        }
+        red = (float)((rgb[i]&0xF800)>>8);   
+        green = (float)((rgb[i]&0x07E0)>>3);
+        blue = (float)((rgb[i]&0x001F)<<3);
+                         
+        y[i] = 0.299f*red + 0.587f*green + 0.114f*blue -128;        
     }
+}
+
+//由亮度生成灰度图
+void yuv_to_rgb565(float y[64], uint16_t rgb[64])
+{
+    uint16_t i, temp;
     for(i = 0; i < 64; i++)
+    {        
+        temp = (uint16_t)(y[i] + 128);
+        temp >>= 3;
+        rgb[i] = (temp<<11 | temp<<6 | temp);
+    }
+}
+
+
+#define  C1 0.9808f
+#define  C2 0.9239f
+#define  C3 0.8315f
+#define  C4 0.7071f
+#define  C5 0.5556f
+#define  C6 0.3827f
+#define  C7 0.1951f
+
+static void fdctrow(float *blk)
+{ 
+    float S07,S16,S25,S34,S0734,S1625;
+    float D07,D16,D25,D34,D0734,D1625;
+
+    S07 = blk[0] + blk[7];
+    S16 = blk[1] + blk[6];
+    S25 = blk[2] + blk[5];
+    S34 = blk[3] + blk[4];
+    S0734 = S07 + S34;
+    S1625 = S16 + S25;
+
+    D07 = blk[0] - blk[7]; 
+    D16 = blk[1] - blk[6];
+    D25 = blk[2] - blk[5];
+    D34 = blk[3] - blk[4];
+    D0734 = S07 - S34;
+    D1625 = S16 - S25;
+
+    blk[0] = 0.5f*(C4 * (S0734+S1625));
+    blk[1] = 0.5f*(C1*D07 + C3*D16 + C5*D25 + C7*D34);
+    blk[2] = 0.5f*(C2*D0734 + C6*D1625);
+    blk[3] = 0.5f*(C3*D07 - C7*D16 - C1*D25 - C5*D34);
+    blk[4] = 0.5f*(C4 * (S0734-S1625));
+    blk[5] = 0.5f*(C5*D07 - C1*D16 + C7*D25 + C3*D34);
+    blk[6] = 0.5f*(C6*D0734 - C2*D1625);
+    blk[7] = 0.5f*(C7*D07 - C5*D16 + C3*D25 - C1*D34);
+}
+
+static void fdctcol(float *blk)
+{
+    float S07,S16,S25,S34,S0734,S1625;
+    float D07,D16,D25,D34,D0734,D1625;
+
+    S07 = blk[0*8] + blk[7*8];
+    S16 = blk[1*8] + blk[6*8];
+    S25 = blk[2*8] + blk[5*8];
+    S34 = blk[3*8] + blk[4*8];
+    S0734 = S07 + S34;
+    S1625 = S16 + S25;
+
+    D07 = blk[0*8] - blk[7*8]; 
+    D16 = blk[1*8] - blk[6*8];
+    D25 = blk[2*8] - blk[5*8];
+    D34 = blk[3*8] - blk[4*8];
+    D0734 = S07 - S34;
+    D1625 = S16 - S25;
+
+    blk[0*8] = 0.5f*(C4 * (S0734+S1625));
+    blk[1*8] = 0.5f*(C1*D07 + C3*D16 + C5*D25 + C7*D34);
+    blk[2*8] = 0.5f*(C2*D0734 + C6*D1625);
+    blk[3*8] = 0.5f*(C3*D07 - C7*D16 - C1*D25 - C5*D34);
+    blk[4*8] = 0.5f*(C4 * (S0734-S1625));
+    blk[5*8] = 0.5f*(C5*D07 - C1*D16 + C7*D25 + C3*D34);
+    blk[6*8] = 0.5f*(C6*D0734 - C2*D1625);
+    blk[7*8] = 0.5f*(C7*D07 - C5*D16 + C3*D25 - C1*D34);
+}
+
+//快速DCT变换
+void jpeg_dct2(float *block)
+{
+    int i;
+    for (i = 0; i < 8; i++)
     {
-        data[i] = buf[i];
+        fdctrow(block + 8*i);
+    }
+    for (i = 0; i < 8; i++)
+    {
+        fdctcol(block + i);
+    }
+}
+
+
+static void idctrow(float *blk)
+{ 
+    float tmp[16];
+
+    //first step
+    tmp[0] = blk[0]*C4 + blk[2]*C2;
+    tmp[1] = blk[4]*C4 + blk[6]*C6;
+    tmp[2] = blk[0]*C4 + blk[2]*C6;
+    tmp[3] = -blk[4]*C4 - blk[6]*C2;
+    tmp[4] = blk[0]*C4 - blk[2]*C6;
+    tmp[5] = -blk[4]*C4 + blk[6]*C2;
+    tmp[6] = blk[0]*C4 - blk[2]*C2;
+    tmp[7] = blk[4]*C4 - blk[6]*C6;
+
+    tmp[8] = blk[1]*C7 - blk[3]*C5;
+    tmp[9] = blk[5]*C3 - blk[7]*C1;
+    tmp[10] = blk[1]*C5 - blk[3]*C1;
+    tmp[11] = blk[5]*C7 + blk[7]*C3;
+    tmp[12] = blk[1]*C3 - blk[3]*C7;
+    tmp[13] = -blk[5]*C1 - blk[7]*C5;
+    tmp[14] = blk[1]*C1 + blk[3]*C3;
+    tmp[15] = blk[5]*C5 + blk[7]*C7;
+
+    //second step
+    tmp[0] = 0.5f *  (tmp[0]+tmp[1]);
+    tmp[1] = 0.5f * (tmp[2]+tmp[3]);
+    tmp[2] = 0.5f * (tmp[4]+tmp[5]);
+    tmp[3] = 0.5f * (tmp[6]+tmp[7]);
+    tmp[4] = 0.5f * (tmp[8]+tmp[9]);
+    tmp[5] = 0.5f * (tmp[10]+tmp[11]);
+    tmp[6] = 0.5f * (tmp[12]+tmp[13]);
+    tmp[7] = 0.5f * (tmp[14]+tmp[15]);
+
+    //third step
+    blk[0] = tmp[0] + tmp[7];
+    blk[1] = tmp[1] + tmp[6];
+    blk[2] = tmp[2] + tmp[5];
+    blk[3] = tmp[3] + tmp[4];
+    blk[4] = tmp[3] - tmp[4];
+    blk[5] = tmp[2] - tmp[5];
+    blk[6] = tmp[1] - tmp[6];
+    blk[7] = tmp[0] - tmp[7];
+}
+
+
+static void idctcol(float *blk)
+{
+    float tmp[16];
+
+    //first step
+    tmp[0] = blk[0*8]*C4 + blk[2*8]*C2;
+    tmp[1] = blk[4*8]*C4 + blk[6*8]*C6;
+    tmp[2] = blk[0*8]*C4 + blk[2*8]*C6;
+    tmp[3] = -blk[4*8]*C4 - blk[6*8]*C2;
+    tmp[4] = blk[0*8]*C4 - blk[2*8]*C6;
+    tmp[5] = -blk[4*8]*C4 + blk[6*8]*C2;
+    tmp[6] = blk[0*8]*C4 - blk[2*8]*C2;
+    tmp[7] = blk[4*8]*C4 - blk[6*8]*C6;
+
+    tmp[8] = blk[1*8]*C7 - blk[3*8]*C5;
+    tmp[9] = blk[5*8]*C3 - blk[7*8]*C1;
+    tmp[10] = blk[1*8]*C5 - blk[3*8]*C1;
+    tmp[11] = blk[5*8]*C7 + blk[7*8]*C3;
+    tmp[12] = blk[1*8]*C3 - blk[3*8]*C7;
+    tmp[13] = -blk[5*8]*C1 - blk[7*8]*C5;
+    tmp[14] = blk[1*8]*C1 + blk[3*8]*C3;
+    tmp[15] = blk[5*8]*C5 + blk[7*8]*C7;
+
+    //second step
+    tmp[0] = 0.5f*(tmp[0] + tmp[1]);
+    tmp[1] = 0.5f*(tmp[2] + tmp[3]);
+    tmp[2] = 0.5f*(tmp[4] + tmp[5]);
+    tmp[3] = 0.5f*(tmp[6] + tmp[7]);
+    tmp[4] = 0.5f*(tmp[8] + tmp[9]);
+    tmp[5] = 0.5f*(tmp[10] + tmp[11]);
+    tmp[6] = 0.5f*(tmp[12] + tmp[13]);
+    tmp[7] = 0.5f*(tmp[14] + tmp[15]);
+
+    //third step
+    blk[0*8] = tmp[0] + tmp[7];
+    blk[1*8] = tmp[1] + tmp[6];
+    blk[2*8] = tmp[2] + tmp[5];
+    blk[3*8] = tmp[3] + tmp[4];
+    blk[4*8] = tmp[3] - tmp[4];
+    blk[5*8] = tmp[2] - tmp[5];
+    blk[6*8] = tmp[1] - tmp[6];
+    blk[7*8] = tmp[0] - tmp[7];
+}
+
+
+//快速DCT逆变换
+void jpeg_inv_dct2(float *block)
+{
+    int i;
+    for (i=0; i<8; i++)
+    {
+        idctrow(block+8*i);
+    }
+    for (i=0; i<8; i++)
+    {
+        idctcol(block+i);
     }
 }
 
@@ -315,6 +429,7 @@ void jpeg_rle(int8_t in[64], int8_t out[30])
         }
     }
 }
+
 void jpeg_inv_rle(int8_t in[30], int8_t out[64])
 {
     uint16_t i, n = 0, count;
@@ -509,8 +624,8 @@ void jpeg_encode(uint32_t *num)
             rgb565_to_yuv(temp, bright);
             if(i == IDEBUG && j == JDEBUG)
             {  
-                printf("\n 颜色格式变换结果：\n");
-                printf_array_f(bright, 8, 8);            
+//                printf("\n 颜色格式变换结果：\n");
+//                printf_array_f(bright, 8, 8);            
             }
             
             jpeg_dct2(bright); 
@@ -546,7 +661,7 @@ void jpeg_encode(uint32_t *num)
 //                printf_array_b(encode, size/16); 
                 return;  
             }
-            printf(" %d    %d %d\n", *num, i ,j);
+//            printf(" %d    %d %d\n", *num, i ,j);
         }
         
     }
@@ -618,19 +733,65 @@ void lcd_show_image2(uint16_t m[76800])
     }
 }
 
+//取值：1.575ms/100 软件最优：1.385ms/100  硬件最优：0.168ms/100
+//格式转换：20ms
+//DCT:2分钟= =。
+//量化：21ms
+//RLE:5.4ms
+//HUFFMAN:2.6ms
+
+/*
+void jpeg_test(void)
+{
+    uint16_t i, j , m, n, t;
+    uint16_t temp[64];
+    float yuv[64], y[64];
+    int8_t d[64], r[64];
+    uint32_t num = 0;
+    uint16_t out[10] = {0};
+    
+    memcpy(temp, test_image1, 128);
+    rgb565_to_yuv(temp, yuv);
+    printf_array_f(yuv,8,8);
+
+    jpeg_dct2(yuv);
+    jpeg_inv_dct2(yuv);
+   printf_array_f(yuv,8,8);
+    
+    
+    return;
+    while(1)
+    {        
+        for(t = 0; t < 600; t++)
+        {        
+            rgb565_to_yuv(temp, yuv);
+            jpeg_dct2(yuv);
+//            memcpy(y, yuv, 256);
+//            jpeg_quantify(y, d);
+//            jpeg_rle(d, r);
+//            jpeg_huffman(r, &num, out);
+        }
+
+       LED0 = ~LED0;
+    }
+}
+*/
+
 void jpeg_test(void)
 {
     memset(encode, 0, 153600);
          
     memset(image, 0, 153600);
      
+    size = 0;
+    
     jpeg_encode(&size);   
     
-    printf("\n %d \n", size);
+    //printf("\n %d \n", size);
     
     jpeg_decode(&size); 
     
-    lcd_show_image2(image);
+    lcd_show_image2(image);    
 }
 
 
