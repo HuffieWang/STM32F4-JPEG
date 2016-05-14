@@ -5,8 +5,8 @@
 
 
 void lcd_show_image(uint8_t m[80][80]);
-void lcd_show_image565(uint16_t m[320][240]);
-void lcd_show_num(u16 y, u16 x, u32 num);
+void lcd_show_num(u16 y, u16 x, int32_t num);
+void lcd_draw_point(uint16_t x, uint16_t y, uint16_t color);
 
 /****************** 以下为正点原子lcd.h源码 www.opendv.com *******************/
 //LCD重要参数集

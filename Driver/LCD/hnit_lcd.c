@@ -15,7 +15,12 @@
  *                 所以在lcd_show_image()和lcd_show_num()中加入扫描方向切换。
  *            4. 2016.4.21  3103创新团队 王昱霏
  *               - 删除lcd_show_image()中的扫描切换，因为对视频数据做了处理，
- *                 不再需要了。
+ *                 不再需要了
+ *            5. 2016.4.24  3103创新团队 王昱霏
+ *               - 扫描方向固定为3（从右到左，从下到上），所有函数不做切换 
+ *               - 新增“画点“函数lcd_draw_point()
+ *            6. 2016.4.27  3103创新团队 王昱霏
+ *               - 完善lcd_show_num()，现在可以显示负整数了
 ******************************************************************************/
 
 #include "hnit_lcd.h"
@@ -36,12 +41,12 @@ _lcd_dev lcddev;        //LCD管理重要参数
 void lcd_show_image(uint8_t m[80][80])
 {  
     u16 i, j, n;
-    
+    lcd_scan_dir(3);  
     for(i = 0; i < 80; i++)
     {
         for(n = 0; n < 3; n++)
         {           
-            lcd_set_cursor(80, i*3+n);  // 设置光标位置                   
+            lcd_set_cursor(0, i*3+n);  // 设置光标位置                   
             lcd_write_ram_prepare();   // 开始写入GRAM     
             for(j = 0; j < 80; j++)
             {
@@ -63,41 +68,36 @@ void lcd_show_image(uint8_t m[80][80])
 }  
 
 /**
-  * @brief  显示320*240的RGB565图像
-  * @param  m[320][240] 待显示的图像
-  * @retval 无
-  */
-void lcd_show_image565(uint16_t m[320][240])
-{  
-    u16 i, j;
-    lcd_scan_dir(3);  
-    lcd_set_cursor(0, 0);          
-    lcd_write_ram_prepare();
-    for(i = 0; i < 320; i++)
-    {
-        for(j = 0; j < 240; j++)
-        {           
-            LCD->LCD_RAM = m[i][j];
-        }
-    }      
-} 
-
-/**
   * @brief  LCD显示数字，字体大小16，模式填充
   * @param  x 起点行坐标
   * @param  y 起点列坐标
   * @param  num 待显示的数字
   * @retval 无
   */
-void lcd_show_num(u16 y, u16 x, u32 num)
+void lcd_show_num(u16 y, u16 x, int32_t m)
 {  
     u8 len = 0, size = 16;  
     u8 t, temp;   
     u8 enshow = 0;	
-    u32 n = num;
+    u32 num, n;
     
     lcd_scan_dir(3);
+    
+    if(m < 0)
+    {
+        num = -m;
+        len++;
+        t = 1;      
+        LCD_ShowChar(x, y, '-', size, 0);
+    }
+    else
+    {
+        t = 0;
+        num = m;
+    }
+      
     // 求数字长度
+    n = num;
     while(n)
     {
         n/=10;
@@ -109,7 +109,7 @@ void lcd_show_num(u16 y, u16 x, u32 num)
     }
     
     // 参考至本文件 LCD_ShowxNum
-    for(t = 0; t < len; t++)
+    for(; t < len; t++)
     {
         temp = (num/LCD_Pow(10,len-t-1))%10;
         if( (enshow == 0)&&(t<(len-1)) )
@@ -126,9 +126,34 @@ void lcd_show_num(u16 y, u16 x, u32 num)
         }
         LCD_ShowChar(x+(size/2)*t, y, temp+'0', size, 0); 
     }
-    lcd_scan_dir(5);
 } 
 
+/**
+  * @brief  在LCD上画一个3*3的点
+  * @param  x 起点行坐标
+  * @param  y 起点列坐标
+  * @param  color 颜色
+  * @retval 无
+  */
+void lcd_draw_point(uint16_t x, uint16_t y, uint16_t color)
+{
+    uint16_t sava = POINT_COLOR;
+    if(x < 79 && y < 79 )
+    {
+        lcd_scan_dir(3);
+        POINT_COLOR = color;
+        lcd_set_cursor(y*3, x*3);		
+        lcd_write_ram_prepare();	
+        LCD->LCD_RAM = RED;LCD->LCD_RAM = RED;LCD->LCD_RAM = RED;
+        lcd_set_cursor(y*3, x*3+1);		
+        lcd_write_ram_prepare();
+        LCD->LCD_RAM = RED;LCD->LCD_RAM = RED;LCD->LCD_RAM = RED;
+        lcd_set_cursor(y*3, x*3+2);	
+        lcd_write_ram_prepare();    
+        LCD->LCD_RAM = RED;LCD->LCD_RAM = RED;LCD->LCD_RAM = RED;   
+        POINT_COLOR = sava;
+    }
+}
 
 /****************** 以下为正点原子lcd.c源码 www.opendv.com *******************/
 //写寄存器函数
@@ -786,7 +811,7 @@ void fsmc_lcd_init(void)
 		FSMC_Bank1E->BWTR[6]|=10<<0;	//地址建立时间（ADDSET）为10个HCLK =60ns  	 
 		FSMC_Bank1E->BWTR[6]|=12<<8; 	//数据保存时间为6ns*13个HCLK=96ns
 	}
-	//printf(" LCD ID:%x\r\n",lcddev.id); //打印LCD ID  
+	printf(" LCD ID:%x\r\n",lcddev.id); //打印LCD ID  
 	if(lcddev.id==0X9341)	//9341初始化
 	{	 
 		LCD_WR_REG(0xCF);  

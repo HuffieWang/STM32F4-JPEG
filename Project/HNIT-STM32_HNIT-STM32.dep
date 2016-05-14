@@ -1485,8 +1485,8 @@ I (..\FwLib\inc\stm32f4xx_can.h)(0x53DBAFAD)
 I (..\FwLib\inc\stm32f4xx_dac.h)(0x53DBAFAD)
 I (..\FwLib\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FwLib\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
-F (..\Driver\LCD\hnit_lcd.c)(0x5729BDC5)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\Core -I..\FwLib\inc -I..\System -I..\System\delay -I..\System\sys -I..\System\usart -I..\User -I..\Driver\LED -I..\Driver\KEY -I..\Driver\LCD -I..\User\JPEG -I..\Driver\SRAM-I D:\Keil_v5\ARM\RV31\INC-I D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include-I D:\Keil_v5\ARM\Inc\ST\STM32F4xx-DSTM32F407xx -DUSE_STDPERIPH_DRIVER -DSTM32F40XX-o ..\obj\hnit_lcd.o --omf_browse ..\obj\hnit_lcd.crf --depend ..\obj\hnit_lcd.d)
-I (..\Driver\LCD\hnit_lcd.h)(0x5728A083)
+F (..\Driver\LCD\hnit_lcd.c)(0x57209BEC)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\Core -I..\FwLib\inc -I..\System -I..\System\delay -I..\System\sys -I..\System\usart -I..\User -I..\Driver\LED -I..\Driver\KEY -I..\Driver\LCD -I..\User\JPEG -I..\Driver\SRAM-I D:\Keil_v5\ARM\RV31\INC-I D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include-I D:\Keil_v5\ARM\Inc\ST\STM32F4xx-DSTM32F407xx -DUSE_STDPERIPH_DRIVER -DSTM32F40XX-o ..\obj\hnit_lcd.o --omf_browse ..\obj\hnit_lcd.crf --depend ..\obj\hnit_lcd.d)
+I (..\Driver\LCD\hnit_lcd.h)(0x57209967)
 I (..\System\sys\stm32_sys.h)(0x5629EAC5)
 I (..\System\stm32f4xx.h)(0x542BA483)
 I (..\Core\core_cm4.h)(0x53C7D530)
@@ -1606,12 +1606,12 @@ I (..\System\usart\stm32_usart.h)(0x5711BD6E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x53463A44)
 I (..\Driver\LED\hnit_led.h)(0x5713533F)
 I (..\Driver\KEY\hnit_key.h)(0x5713546B)
-I (..\Driver\LCD\hnit_lcd.h)(0x5728A083)
+I (..\Driver\LCD\hnit_lcd.h)(0x57209967)
 I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x53463A44)
 I (..\User\JPEG\hnit_jpeg.h)(0x57289D9A)
 I (..\Driver\SRAM\hnit_sram.h)(0x57136278)
-F (..\User\JPEG\hnit_jpeg.c)(0x5733FACA)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\Core -I..\FwLib\inc -I..\System -I..\System\delay -I..\System\sys -I..\System\usart -I..\User -I..\Driver\LED -I..\Driver\KEY -I..\Driver\LCD -I..\User\JPEG -I..\Driver\SRAM-I D:\Keil_v5\ARM\RV31\INC-I D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include-I D:\Keil_v5\ARM\Inc\ST\STM32F4xx-DSTM32F407xx -DUSE_STDPERIPH_DRIVER -DSTM32F40XX-o ..\obj\hnit_jpeg.o --omf_browse ..\obj\hnit_jpeg.crf --depend ..\obj\hnit_jpeg.d)
-I (..\User\JPEG\jpeg_data.h)(0x5731EC55)
+F (..\User\JPEG\hnit_jpeg.c)(0x5735E01A)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\Core -I..\FwLib\inc -I..\System -I..\System\delay -I..\System\sys -I..\System\usart -I..\User -I..\Driver\LED -I..\Driver\KEY -I..\Driver\LCD -I..\User\JPEG -I..\Driver\SRAM-I D:\Keil_v5\ARM\RV31\INC-I D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include-I D:\Keil_v5\ARM\Inc\ST\STM32F4xx-DSTM32F407xx -DUSE_STDPERIPH_DRIVER -DSTM32F40XX-o ..\obj\hnit_jpeg.o --omf_browse ..\obj\hnit_jpeg.crf --depend ..\obj\hnit_jpeg.d)
+I (..\User\JPEG\jpeg_data.h)(0x5735D931)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x53463A44)
 I (..\User\JPEG\hnit_jpeg.h)(0x57289D9A)
 I (..\System\sys\stm32_sys.h)(0x5629EAC5)
@@ -1652,3 +1652,6 @@ I (D:\Keil_v5\ARM\ARMCC\include\math.h)(0x53463A44)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x53463A44)
 I (..\System\usart\stm32_usart.h)(0x5711BD6E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x53463A44)
+I (..\Driver\LCD\hnit_lcd.h)(0x57209967)
+I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x53463A44)
+I (..\Driver\KEY\hnit_key.h)(0x5713546B)
