@@ -442,6 +442,11 @@ void jpeg_inv_rle(int8_t in[60], int8_t out[64])
 {
     uint16_t i, n = 0, count;
 
+    for(i = 0; i < 64; i++)
+    {
+        out[i] = 0;
+    }
+    
     for(i = 0; i < 20; i++)
     {
         count = in[i*3];
@@ -612,10 +617,10 @@ void jpeg_inv_huffman(uint16_t *in, uint32_t *c, uint32_t *s, int8_t out[60])
     }
 }    
 
-#define IDEBUG  3
-#define JDEBUG  2
-//#define IDEBUG  39
-//#define JDEBUG  29
+//#define IDEBUG  3
+//#define JDEBUG  1
+#define IDEBUG  39
+#define JDEBUG  29
 
 void jpeg_encode(uint32_t *num)
 {   
@@ -704,24 +709,32 @@ void jpeg_decode(uint32_t *num)
 
         if(j == IDEBUG*30+JDEBUG)
         {
-            printf("\n 游程逆：\n");
+            printf("\n 译码：\n");
             printf_array_d(i_rle, 20, 3);                
         }
-        
-//        printf("\n");
-        
+              
         jpeg_inv_rle(i_rle, i_dct);
+        if(j == IDEBUG*30+JDEBUG)
+        {
+            printf("\n 游程逆：\n");
+            printf_array_d(i_dct, 8, 8);                
+        }
         
         jpeg_inv_zigzag(i_dct);
         
         jpeg_inv_quantify(i_dct, temp);
         
+        if(j == IDEBUG*30+JDEBUG)
+        {                   
+            printf("\n 反量化结果：\n");
+            printf_array_f(temp, 8, 8);  
+        }       
         jpeg_inv_dct2(temp); 
         
         if(j == IDEBUG*30+JDEBUG)
         {
-//            printf("\n DCT逆变换结果：\n");
-//            printf_array_f(temp, 8, 8);                
+            printf("\n DCT逆变换结果：\n");
+            printf_array_f(temp, 8, 8);                
         }       
         
         yuv_to_rgb565(temp, rec);
