@@ -3,11 +3,11 @@
 <title>Static Call Graph - [..\OBJ\STM32-HNIT.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\OBJ\STM32-HNIT.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5040049: Last Updated: Sat May 14 17:29:18 2016
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5040049: Last Updated: Sun May 15 16:55:57 2016
 <BR><P>
-<H3>Maximum Stack Usage =        680 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        704 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-__rt_entry_main &rArr; main &rArr; jpeg_test &rArr; jpeg_decode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
+__rt_entry_main &rArr; main &rArr; jpeg_test &rArr; jpeg_encode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
 <P>
 <H3>
 Functions with no stack information
@@ -271,8 +271,8 @@ Global Symbols
 <P><STRONG><a name="[118]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[78]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 680 + Unknown Stack Size
-<LI>Call Chain = __rt_entry_main &rArr; main &rArr; jpeg_test &rArr; jpeg_decode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
+<BR><BR>[Stack]<UL><LI>Max Depth = 704 + Unknown Stack Size
+<LI>Call Chain = __rt_entry_main &rArr; main &rArr; jpeg_test &rArr; jpeg_encode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
 <LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1265,8 +1265,8 @@ Global Symbols
 <P><STRONG><a name="[17d]"></a>sram_read_buffer</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, hnit_sram.o(.text), UNUSED)
 
 <P><STRONG><a name="[79]"></a>main</STRONG> (Thumb, 90 bytes, Stack size 0 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 680 + Unknown Stack Size
-<LI>Call Chain = main &rArr; jpeg_test &rArr; jpeg_decode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
+<BR><BR>[Stack]<UL><LI>Max Depth = 704 + Unknown Stack Size
+<LI>Call Chain = main &rArr; jpeg_test &rArr; jpeg_encode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_PriorityGroupConfig
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_test
@@ -1289,11 +1289,17 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_decode
+<BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_encode
 </UL>
 
-<P><STRONG><a name="[c5]"></a>printf_array_d</STRONG> (Thumb, 56 bytes, Stack size 24 bytes, hnit_jpeg.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
+<P><STRONG><a name="[c5]"></a>printf_array_d</STRONG> (Thumb, 56 bytes, Stack size 24 bytes, hnit_jpeg.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 152 + Unknown Stack Size
+<LI>Call Chain = printf_array_d &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_decode
+<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_encode
 </UL>
 
 <P><STRONG><a name="[c6]"></a>printf_array_u</STRONG> (Thumb, 58 bytes, Stack size 24 bytes, hnit_jpeg.o(.text), UNUSED)
@@ -1358,47 +1364,51 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_decode
 </UL>
 
-<P><STRONG><a name="[d3]"></a>jpeg_rle</STRONG> (Thumb, 262 bytes, Stack size 24 bytes, hnit_jpeg.o(.text))
+<P><STRONG><a name="[d3]"></a>jpeg_rle</STRONG> (Thumb, 320 bytes, Stack size 24 bytes, hnit_jpeg.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = jpeg_rle
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_encode
 </UL>
 
-<P><STRONG><a name="[d7]"></a>jpeg_inv_rle</STRONG> (Thumb, 82 bytes, Stack size 20 bytes, hnit_jpeg.o(.text))
+<P><STRONG><a name="[d7]"></a>jpeg_inv_rle</STRONG> (Thumb, 66 bytes, Stack size 20 bytes, hnit_jpeg.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = jpeg_inv_rle
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_decode
 </UL>
 
-<P><STRONG><a name="[d4]"></a>jpeg_huffman</STRONG> (Thumb, 442 bytes, Stack size 36 bytes, hnit_jpeg.o(.text))
+<P><STRONG><a name="[d4]"></a>jpeg_huffman</STRONG> (Thumb, 448 bytes, Stack size 36 bytes, hnit_jpeg.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = jpeg_huffman
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_encode
 </UL>
 
-<P><STRONG><a name="[d6]"></a>jpeg_inv_huffman</STRONG> (Thumb, 450 bytes, Stack size 40 bytes, hnit_jpeg.o(.text))
+<P><STRONG><a name="[d6]"></a>jpeg_inv_huffman</STRONG> (Thumb, 460 bytes, Stack size 40 bytes, hnit_jpeg.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = jpeg_inv_huffman
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_decode
 </UL>
 
-<P><STRONG><a name="[ce]"></a>jpeg_encode</STRONG> (Thumb, 216 bytes, Stack size 504 bytes, hnit_jpeg.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 580<LI>Call Chain = jpeg_encode &rArr; jpeg_zigzag
+<P><STRONG><a name="[ce]"></a>jpeg_encode</STRONG> (Thumb, 384 bytes, Stack size 536 bytes, hnit_jpeg.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 696 + Unknown Stack Size
+<LI>Call Chain = jpeg_encode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_huffman
 <LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_rle
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_zigzag
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_quantify
 <LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_dct2
 <LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rgb565_to_yuv
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_array_d
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_array_f
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_test
 </UL>
 
-<P><STRONG><a name="[d5]"></a>jpeg_decode</STRONG> (Thumb, 230 bytes, Stack size 512 bytes, hnit_jpeg.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 672 + Unknown Stack Size
-<LI>Call Chain = jpeg_decode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
+<P><STRONG><a name="[d5]"></a>jpeg_decode</STRONG> (Thumb, 226 bytes, Stack size 536 bytes, hnit_jpeg.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 688 + Unknown Stack Size
+<LI>Call Chain = jpeg_decode &rArr; printf_array_d &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
@@ -1408,7 +1418,7 @@ Global Symbols
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_inv_quantify
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_inv_dct2
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;yuv_to_rgb565
-<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_array_f
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_array_d
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_test
 </UL>
@@ -1423,11 +1433,12 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_test
 </UL>
 
-<P><STRONG><a name="[c2]"></a>jpeg_test</STRONG> (Thumb, 48 bytes, Stack size 8 bytes, hnit_jpeg.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 680 + Unknown Stack Size
-<LI>Call Chain = jpeg_test &rArr; jpeg_decode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
+<P><STRONG><a name="[c2]"></a>jpeg_test</STRONG> (Thumb, 58 bytes, Stack size 8 bytes, hnit_jpeg.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 704 + Unknown Stack Size
+<LI>Call Chain = jpeg_test &rArr; jpeg_encode &rArr; printf_array_f &rArr; __2printf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lcd_show_image2
 <LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_decode
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_encode
@@ -1444,10 +1455,12 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_file
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_decode
+<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_encode
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_array_b
 <LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_array_u
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_array_d
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_array_f
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;jpeg_test
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fsmc_lcd_init
 </UL>
 

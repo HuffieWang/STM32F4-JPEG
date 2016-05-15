@@ -12,6 +12,7 @@
 #include "math.h"
 #include "string.h"
 #include "stm32_usart.h"
+#include "stm32_delay.h"
 #include "hnit_lcd.h"
 #include "hnit_key.h"
 #include "hnit_led.h"
@@ -20,9 +21,7 @@ uint32_t size = 0;
 uint16_t encode[76800] __attribute__((at(0X68000000)));
 uint16_t image[76800] __attribute__((at(0X68000000+sizeof(encode))));;
 
-float i_yuv_y[64] = {0};
 uint32_t i_size = 0;
-
 
 //浮点数组显示
 void printf_array_f(float n[], uint16_t x, uint16_t y)
@@ -89,6 +88,7 @@ void printf_array_b(uint16_t n[], uint16_t x)
     }
 }
 
+
 void rgb_to_yuv(uint16_t rgb[3840], uint16_t yuv[3840])
 {
     uint16_t i, temp;
@@ -106,6 +106,7 @@ void rgb_to_yuv(uint16_t rgb[3840], uint16_t yuv[3840])
     }
 }
 
+
 //图像格式转换 仅取亮度
 void rgb565_to_yuv(uint16_t rgb[64], float y[64])
 {
@@ -121,6 +122,7 @@ void rgb565_to_yuv(uint16_t rgb[64], float y[64])
         y[i] = 0.299f*red + 0.587f*green + 0.114f*blue -128;        
     }
 }
+
 
 //由亮度生成灰度图
 void yuv_to_rgb565(float y[64], uint16_t rgb[64])
@@ -305,7 +307,6 @@ static void idctcol(float *blk)
     blk[7*8] = tmp[0] - tmp[7];
 }
 
-
 //快速DCT逆变换
 void jpeg_inv_dct2(float *block)
 {
@@ -360,6 +361,7 @@ void jpeg_zigzag(int8_t data[64])
         data[i] = temp[i];
     }    
 }
+
 void jpeg_inv_zigzag(int8_t data[64])
 {
     uint16_t i, j;
@@ -378,12 +380,12 @@ void jpeg_inv_zigzag(int8_t data[64])
 }
 
 //游程编码
-void jpeg_rle(int8_t in[64], int8_t out[30])
+void jpeg_rle(int8_t in[64], int8_t out[60])
 {
     uint16_t i, j;
     int8_t m = 0, n, count = 0, group = 0;
 
-    for(i = 0; i < 30; i++)
+    for(i = 0; i < 60; i++)
     {
         out[i] = 0;
     }
@@ -399,10 +401,10 @@ void jpeg_rle(int8_t in[64], int8_t out[30])
                 {
                     out[m*3] = 15;
                     out[m*3+1] = 0;
-                    out[m*3+2] = 0;                    
-                }
-                count = 0;
-                m++;
+                    out[m*3+2] = 0; 
+                    count = 0;
+                    m++;
+                }               
             }
             else
             {
@@ -419,27 +421,28 @@ void jpeg_rle(int8_t in[64], int8_t out[30])
                 group = 0;
                 m++;
             }
-            if(m == 10)
+            if(m == 19)
             {
-                out[27] = 0;
-                out[28] = 0;
-                out[29] = 0;
-                return;
+                j = 8;
+                i = 8;
             }
         }
     }
+    while(out[m*3+2] == 0)
+    {
+        m--;
+    }
+    m++;
+    out[m*3] = 0;
+    out[m*3+1] = 0;
+    out[m*3+2] = 0;
 }
 
-void jpeg_inv_rle(int8_t in[30], int8_t out[64])
+void jpeg_inv_rle(int8_t in[60], int8_t out[64])
 {
     uint16_t i, n = 0, count;
-    
-    for(i = 0; i < 30; i++)
-    {
-        out[i] = 0;
-    }
-    
-    for(i = 0; i < 10; i++)
+
+    for(i = 0; i < 20; i++)
     {
         count = in[i*3];
         while(count--)
@@ -451,13 +454,13 @@ void jpeg_inv_rle(int8_t in[30], int8_t out[64])
 }
 
 //霍夫曼编码
-void jpeg_huffman(int8_t in[30], uint32_t *c, uint16_t *out)
+void jpeg_huffman(int8_t in[60], uint32_t *c, uint16_t *out)
 {
     uint16_t i;
     uint16_t zeros, length, huffman;
     uint32_t move, count = (*c)%16;
     uint16_t num1, mask = 0;
-    for(i = 0; i < 10; i++)
+    for(i = 0; i < 20; i++)
     {
         zeros = in[i*3];
         length = in[i*3+1];
@@ -494,7 +497,7 @@ void jpeg_huffman(int8_t in[30], uint32_t *c, uint16_t *out)
             *out = *out << move | huffman; 
         }  
         
-        if(length == 0)
+        if(length == 0 && zeros != 15)
         {
             *c/=16;
             *c*=16;
@@ -521,7 +524,7 @@ void jpeg_huffman(int8_t in[30], uint32_t *c, uint16_t *out)
 }
 
 //霍夫曼解码
-void jpeg_inv_huffman(uint16_t *in, uint32_t *c, uint32_t *s, int8_t out[30])
+void jpeg_inv_huffman(uint16_t *in, uint32_t *c, uint32_t *s, int8_t out[60])
 {
     uint16_t n, m = 0, k = 0;
     uint16_t zeros, length, huffman;
@@ -534,14 +537,14 @@ void jpeg_inv_huffman(uint16_t *in, uint32_t *c, uint32_t *s, int8_t out[30])
         if((*in & 0x8000) == 0x8000)
         {              
             temp |= 0x0001;
-        }
-        k++;
-        
+        }              
         *in <<= 1;
         sum++;
         if(sum%16 == 0)
+        {
             in++; 
-        
+        }
+        k++; 
         for(n = 0; n < 161; n++)
         {
             if(k == huffman_ac_code[n][0] && temp == huffman_ac_code[n][1])
@@ -549,50 +552,59 @@ void jpeg_inv_huffman(uint16_t *in, uint32_t *c, uint32_t *s, int8_t out[30])
                 k = 0;
                 break;
             }
-        }
-        
+        }     
         if(n == 0)
         {
             *c = count;
             *s = sum;
             return;
-        }
-        
+        }      
         if(n != 161)
         {           
             zeros = n / 10;
             out[3*m] = zeros;
             length = n % 10; 
             out[3*m+1] = length;
-                          
-            if((*in & 0x8000) == 0x8000)
+                                     
+            if(length == 0)
             {
-                out[3*m+2] = 1;
+                huffman = 0;
             }
             else
             {
-                out[3*m+2] = -1;
-            }
-
-            *in <<= 1;
-            sum++;
-            if(sum%16 == 0)
-                in++;
-            huffman = 0x0001;
-            length--;               
-            while(length--)
-            {
-                huffman <<= 1;
                 if((*in & 0x8000) == 0x8000)
                 {
-                    huffman |= 0x0001;
+                    out[3*m+2] = 1;
+                }
+                else
+                {
+                    out[3*m+2] = -1;
                 }
                 *in <<= 1;
                 sum++;
                 if(sum%16 == 0)
+                {
                     in++;
-            }                               
-            
+                }            
+                huffman = 0x0001;
+                
+                length--;
+                while(length--)
+                {
+                    huffman <<= 1;
+                    if((*in & 0x8000) == 0x8000)
+                    {
+                        huffman |= 0x0001;
+                    }
+                    *in <<= 1;
+                    sum++;
+                    if(sum%16 == 0)
+                    {
+                        in++;
+                    }
+                }                  
+            }                
+                                         
             out[3*m+2] *= (int8_t)huffman;               
             m++;
             temp = 0;           
@@ -600,12 +612,14 @@ void jpeg_inv_huffman(uint16_t *in, uint32_t *c, uint32_t *s, int8_t out[30])
     }
 }    
 
-#define IDEBUG  39
-#define JDEBUG  29
+#define IDEBUG  3
+#define JDEBUG  2
+//#define IDEBUG  39
+//#define JDEBUG  29
 
 void jpeg_encode(uint32_t *num)
 {   
-    int8_t dct[64] = {0}, rle[30] = {0}; 
+    int8_t dct[64] = {0}, rle[60] = {0}; 
     uint16_t i, j, m, n, temp[64];
     float bright[64];
      
@@ -621,49 +635,52 @@ void jpeg_encode(uint32_t *num)
                 }
             }
   
+//            printf(" %d  %d \n", i, j);
+            
             rgb565_to_yuv(temp, bright);
             if(i == IDEBUG && j == JDEBUG)
             {  
-//                printf("\n 颜色格式变换结果：\n");
-//                printf_array_f(bright, 8, 8);            
+                printf("\n 颜色格式变换结果：\n");
+                printf_array_f(bright, 8, 8);            
             }
             
             jpeg_dct2(bright); 
             if(i == IDEBUG && j == JDEBUG)
             {  
-//                printf("\n DCT变换结果：\n");
-//                printf_array_f(bright, 8, 8);
+                printf("\n DCT变换结果：\n");
+                printf_array_f(bright, 8, 8);
             }
             jpeg_quantify(bright, dct); 
             if(i == IDEBUG && j == JDEBUG)
             {  
-//                printf("\n 量化结果：\n");             
-//                printf_array_d(dct, 8, 8);
+                printf("\n 量化结果：\n");             
+                printf_array_d(dct, 8, 8);
             }
             jpeg_zigzag(dct); 
             if(i == IDEBUG && j == JDEBUG)
             {            
-//                printf("\n Zigzag排序结果：\n");
-//                printf_array_d(dct, 8, 8);
+                printf("\n Zigzag排序结果：\n");
+               printf_array_d(dct, 8, 8);
             }
             
             jpeg_rle(dct, rle);       
             if(i == IDEBUG && j == JDEBUG)
             {
-//                printf("\n 游程编码结果：%d\n", j);
-//                printf_array_d(rle, 10, 3);                
+                printf("\n 游程编码结果：%d\n", j);
+               printf_array_d(rle, 20, 3);                
             }
-          
+//            printf("\n");
+            
+            
             jpeg_huffman(rle, num, encode+*num/16);            
             if(i == IDEBUG && j == JDEBUG)
             {
 //                printf("\n 霍夫曼编码结果：\n");    
-//                printf_array_b(encode, size/16); 
+//               printf_array_b(encode, size/16); 
+                encode[size/16] <<= (16-size%16);
                 return;  
             }
-//            printf(" %d    %d %d\n", *num, i ,j);
-        }
-        
+        }              
     }
     encode[size/16] <<= (16-size%16);
 }
@@ -672,7 +689,7 @@ void jpeg_decode(uint32_t *num)
 {
     uint32_t i = 0, j = 0, m, n;
     uint32_t i_num = 0;
-    int8_t i_rle[30] = {0};
+    int8_t i_rle[60] = {0};
     int8_t i_dct[64] = {0}; 
     float temp[64] = {0};
     uint16_t rec[64] = {0};
@@ -681,26 +698,34 @@ void jpeg_decode(uint32_t *num)
     //TODO 停不下来？
     while(j <= IDEBUG*30+JDEBUG)
     {
-        //printf("%d\n", j);
+//        printf("%d  %d\n", j/30, j%30);
         
         jpeg_inv_huffman(encode+i_num/16, num, &i_num, i_rle);       
-                     
+
+        if(j == IDEBUG*30+JDEBUG)
+        {
+            printf("\n 游程逆：\n");
+            printf_array_d(i_rle, 20, 3);                
+        }
+        
+//        printf("\n");
+        
         jpeg_inv_rle(i_rle, i_dct);
         
         jpeg_inv_zigzag(i_dct);
         
         jpeg_inv_quantify(i_dct, temp);
         
-        jpeg_inv_dct2(temp);        
+        jpeg_inv_dct2(temp); 
+        
         if(j == IDEBUG*30+JDEBUG)
         {
-            printf("\n DCT逆变换结果：\n");
-            printf_array_f(temp, 8, 8);                
+//            printf("\n DCT逆变换结果：\n");
+//            printf_array_f(temp, 8, 8);                
         }       
         
         yuv_to_rgb565(temp, rec);
-        
-        
+                
         for(m = 0; m < 8; m++)
         {
             for(n = 0; n < 8; n++)
@@ -708,15 +733,11 @@ void jpeg_decode(uint32_t *num)
                 image[((j/30)*8+m)*240+(j%30)*8+n] = rec[m*8+n];
             }
         }
-        
-//        if(j == IDEBUG*30+JDEBUG)
-//        {
-//            printf("\n 颜色格式转换结果：\n");
-//            printf_array_u(rec, 8, 8);                
-//        }          
-               
-        for(i = 0; i < 30;i++)
+                               
+        for(i = 0; i < 60;i++)
+        {
             i_rle[i] = 0;
+        }
         j++;       
     } 
 }
@@ -733,50 +754,6 @@ void lcd_show_image2(uint16_t m[76800])
     }
 }
 
-//取值：1.575ms/100 软件最优：1.385ms/100  硬件最优：0.168ms/100
-//格式转换：20ms
-//DCT:2分钟= =。
-//量化：21ms
-//RLE:5.4ms
-//HUFFMAN:2.6ms
-
-/*
-void jpeg_test(void)
-{
-    uint16_t i, j , m, n, t;
-    uint16_t temp[64];
-    float yuv[64], y[64];
-    int8_t d[64], r[64];
-    uint32_t num = 0;
-    uint16_t out[10] = {0};
-    
-    memcpy(temp, test_image1, 128);
-    rgb565_to_yuv(temp, yuv);
-    printf_array_f(yuv,8,8);
-
-    jpeg_dct2(yuv);
-    jpeg_inv_dct2(yuv);
-   printf_array_f(yuv,8,8);
-    
-    
-    return;
-    while(1)
-    {        
-        for(t = 0; t < 600; t++)
-        {        
-            rgb565_to_yuv(temp, yuv);
-            jpeg_dct2(yuv);
-//            memcpy(y, yuv, 256);
-//            jpeg_quantify(y, d);
-//            jpeg_rle(d, r);
-//            jpeg_huffman(r, &num, out);
-        }
-
-       LED0 = ~LED0;
-    }
-}
-*/
-
 void jpeg_test(void)
 {
     memset(encode, 0, 153600);
@@ -787,12 +764,11 @@ void jpeg_test(void)
     
     jpeg_encode(&size);   
     
-    //printf("\n %d \n", size);
+    printf("\n %d \n", size);
     
     jpeg_decode(&size); 
     
     lcd_show_image2(image);    
 }
-
 
 /******************************* END OF FILE *********************************/

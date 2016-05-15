@@ -41,6 +41,7 @@
 ..\obj\hnit_jpeg.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\string.h
 ..\obj\hnit_jpeg.o: ..\System\usart\stm32_usart.h
 ..\obj\hnit_jpeg.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdio.h
+..\obj\hnit_jpeg.o: ..\System\delay\stm32_delay.h
 ..\obj\hnit_jpeg.o: ..\Driver\LCD\hnit_lcd.h
 ..\obj\hnit_jpeg.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdlib.h
 ..\obj\hnit_jpeg.o: ..\Driver\KEY\hnit_key.h
