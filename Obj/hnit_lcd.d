@@ -3,9 +3,9 @@
 ..\obj\hnit_lcd.o: ..\System\sys\stm32_sys.h
 ..\obj\hnit_lcd.o: ..\System\stm32f4xx.h
 ..\obj\hnit_lcd.o: ..\Core\core_cm4.h
-..\obj\hnit_lcd.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdint.h
-..\obj\hnit_lcd.o: D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include\core_cmInstr.h
-..\obj\hnit_lcd.o: D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include\core_cmFunc.h
+..\obj\hnit_lcd.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\obj\hnit_lcd.o: ..\Core\core_cmInstr.h
+..\obj\hnit_lcd.o: ..\Core\core_cmFunc.h
 ..\obj\hnit_lcd.o: ..\Core\core_cm4_simd.h
 ..\obj\hnit_lcd.o: ..\System\system_stm32f4xx.h
 ..\obj\hnit_lcd.o: ..\System\stm32f4xx_conf.h
@@ -36,8 +36,8 @@
 ..\obj\hnit_lcd.o: ..\FwLib\inc\stm32f4xx_dac.h
 ..\obj\hnit_lcd.o: ..\FwLib\inc\stm32f4xx_dcmi.h
 ..\obj\hnit_lcd.o: ..\FwLib\inc\stm32f4xx_fsmc.h
-..\obj\hnit_lcd.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdlib.h
+..\obj\hnit_lcd.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\hnit_lcd.o: ..\Driver\LCD\font.h
 ..\obj\hnit_lcd.o: ..\System\usart\stm32_usart.h
-..\obj\hnit_lcd.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdio.h
+..\obj\hnit_lcd.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\hnit_lcd.o: ..\System\delay\stm32_delay.h

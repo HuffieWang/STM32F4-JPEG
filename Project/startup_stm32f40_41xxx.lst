@@ -867,11 +867,13 @@ ARM Macro Assembler    Page 14
               00000400 
               00000200 
               00000000 
-Command Line: --debug --xref --cpu=Cortex-M4.fp --apcs=interwork --depend=..\ob
-j\startup_stm32f40_41xxx.d -o..\obj\startup_stm32f40_41xxx.o -ID:\Keil_v5\ARM\R
-V31\INC -ID:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include -ID:\Keil_v5\ARM\In
-c\ST\STM32F4xx --list=.\startup_stm32f40_41xxx.lst ..\CORE\startup_stm32f40_41x
-xx.s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=..\obj\startup_stm32f40_41xxx.d -o..\obj\startup_stm32f40_41xxx
+.o -I"E:\MyCode\HNIT-STM32F4\7 - JEPG\JPEG\Project\RTE" -IC:\Keil_v5\ARM\PACK\K
+eil\STM32F4xx_DFP\2.2.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include -IC:\Keil_v5\
+ARM\CMSIS\Include --predefine="__UVISION_VERSION SETA 520" --predefine="STM32F4
+07xx SETA 1" --list=.\startup_stm32f40_41xxx.lst ..\CORE\startup_stm32f40_41xxx
+.s
 
 
 
@@ -1984,4 +1986,4 @@ Symbol: __use_two_region_memory
       None
 Comment: __use_two_region_memory unused
 3 symbols
-446 symbols in table
+448 symbols in table

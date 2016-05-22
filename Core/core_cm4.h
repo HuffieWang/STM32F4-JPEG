@@ -172,6 +172,7 @@
 
 #endif /* __CORE_CM4_H_GENERIC */
 
+
 #ifndef __CMSIS_GENERIC
 
 #ifndef __CORE_CM4_H_DEPENDANT

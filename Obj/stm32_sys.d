@@ -2,9 +2,9 @@
 ..\obj\stm32_sys.o: ..\System\sys\stm32_sys.h
 ..\obj\stm32_sys.o: ..\System\stm32f4xx.h
 ..\obj\stm32_sys.o: ..\Core\core_cm4.h
-..\obj\stm32_sys.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdint.h
-..\obj\stm32_sys.o: D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include\core_cmInstr.h
-..\obj\stm32_sys.o: D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include\core_cmFunc.h
+..\obj\stm32_sys.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\obj\stm32_sys.o: ..\Core\core_cmInstr.h
+..\obj\stm32_sys.o: ..\Core\core_cmFunc.h
 ..\obj\stm32_sys.o: ..\Core\core_cm4_simd.h
 ..\obj\stm32_sys.o: ..\System\system_stm32f4xx.h
 ..\obj\stm32_sys.o: ..\System\stm32f4xx_conf.h

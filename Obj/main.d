@@ -2,9 +2,9 @@
 ..\obj\main.o: ..\System\sys\stm32_sys.h
 ..\obj\main.o: ..\System\stm32f4xx.h
 ..\obj\main.o: ..\Core\core_cm4.h
-..\obj\main.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdint.h
-..\obj\main.o: D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include\core_cmInstr.h
-..\obj\main.o: D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.1\CMSIS\Include\core_cmFunc.h
+..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\obj\main.o: ..\Core\core_cmInstr.h
+..\obj\main.o: ..\Core\core_cmFunc.h
 ..\obj\main.o: ..\Core\core_cm4_simd.h
 ..\obj\main.o: ..\System\system_stm32f4xx.h
 ..\obj\main.o: ..\System\stm32f4xx_conf.h
@@ -37,10 +37,10 @@
 ..\obj\main.o: ..\FwLib\inc\stm32f4xx_fsmc.h
 ..\obj\main.o: ..\System\delay\stm32_delay.h
 ..\obj\main.o: ..\System\usart\stm32_usart.h
-..\obj\main.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdio.h
+..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\main.o: ..\Driver\LED\hnit_led.h
 ..\obj\main.o: ..\Driver\KEY\hnit_key.h
 ..\obj\main.o: ..\Driver\LCD\hnit_lcd.h
-..\obj\main.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdlib.h
+..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\main.o: ..\User\JPEG\hnit_jpeg.h
 ..\obj\main.o: ..\Driver\SRAM\hnit_sram.h
