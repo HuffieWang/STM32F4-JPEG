@@ -18,9 +18,9 @@ int8_t yuv[3][76800] __attribute__((at(0X68000000)));
 uint16_t encode[7680] __attribute__((at(0X68000000+sizeof(yuv))));                 //´æ´¢Ñ¹ËõºóµÄÍ¼Ïñ
 uint16_t image[76800] __attribute__((at(0X68000000+sizeof(yuv)+sizeof(encode))));  //´æ´¢½âÑ¹ºóµÄÍ¼Ïñ
 
-//#define JPEG_DEBUG
-#define DEBUG_I 8
-#define DEBUG_J 10
+#define JPEG_DEBUG
+#define DEBUG_I 0
+#define DEBUG_J 0
 
 #ifdef JPEG_DEBUG
 uint32_t debug;
